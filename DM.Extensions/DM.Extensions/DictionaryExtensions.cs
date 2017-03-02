@@ -70,5 +70,39 @@ namespace DM.Extensions
 
             return value;
         }
+
+        /// <summary>
+        /// Converts collection of single instances into dictionary via key/value selectors.
+        /// </summary>
+        /// <typeparam name="TSource">Type of input instance.</typeparam>
+        /// <typeparam name="TKey">Type of key.</typeparam>
+        /// <typeparam name="TValue">Type of value.</typeparam>
+        /// <param name="source">Source collection to convert.</param>
+        /// <param name="keySelector">Key selector.</param>
+        /// <param name="valueSelector">Value selector.</param>
+        /// <param name="isOverrideExistingKey">Defines if first or last value will be used in case of duplicated keys.</param>
+        public static Dictionary<TKey, TValue> ToDistinctDictionary<TSource, TKey, TValue>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TValue> valueSelector, bool isOverrideExistingKey = false)
+        {
+            Dictionary<TKey, TValue> result = new Dictionary<TKey, TValue>();
+            foreach (TSource element in source)
+            {
+                var key = keySelector(element);
+                var value = valueSelector(element);
+
+                if (result.ContainsKey(key))
+                {
+                    if (isOverrideExistingKey)
+                    {
+                        result[key] = value;
+                    }
+                }
+                else
+                {
+                    result[key] = value;
+                }
+            }
+
+            return result;
+        }
     }
 }
